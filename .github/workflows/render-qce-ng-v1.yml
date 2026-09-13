@@ -1,0 +1,58 @@
+name: Render qce-ng-v1
+
+on:
+  push:
+    branches: [ qce-ng-v1-build ]
+  workflow_dispatch:
+
+jobs:
+  render:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Aeyian TTS
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build build-essential libpcaudio-dev libsonic-dev
+
+      - name: Checkout eSpeak-NG 1.52.0
+        run: |
+          git clone --depth 1 --branch 1.52.0 https://github.com/espeak-ng/espeak-ng.git espeak-ng
+
+      - name: Apply Commune Elven overlay
+        run: |
+          cp qce-ng-v1/phsource/ph_commune_elven espeak-ng/phsource/ph_commune_elven
+          cat qce-ng-v1/phsource/phonemes.qce.block >> espeak-ng/phsource/phonemes
+          cp qce-ng-v1/dictsource/qce_list espeak-ng/dictsource/qce_list
+          cp qce-ng-v1/dictsource/qce_rules espeak-ng/dictsource/qce_rules
+          mkdir -p espeak-ng/espeak-ng-data/lang/art
+          cp qce-ng-v1/espeak-ng-data/lang/art/qce espeak-ng/espeak-ng-data/lang/art/qce
+
+      - name: Configure and build modern eSpeak-NG
+        working-directory: espeak-ng
+        run: |
+          cmake -B build -G Ninja -DUSE_ASYNC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install"
+          cmake --build build --target espeak-ng
+          cmake --build build --target data
+          cmake --install build
+
+      - name: Verify qce voice and render raw reference
+        run: |
+          export PATH="$GITHUB_WORKSPACE/install/bin:$PATH"
+          export ESPEAK_DATA_PATH="$GITHUB_WORKSPACE/install/share/espeak-ng-data"
+          espeak-ng --version
+          espeak-ng --voices=qce || true
+          espeak-ng -vqce -x 'atla naɹt puld tojamɹan' > qce_phonemes.txt
+          espeak-ng -vqce -s 116 -g 0 -p 46 -a 135 -w qce_ng_v1_raw.wav 'atla naɹt puld tojamɹan'
+          file qce_ng_v1_raw.wav
+          ls -lh qce_ng_v1_raw.wav qce_phonemes.txt
+
+      - name: Upload raw render
+        uses: actions/upload-artifact@v4
+        with:
+          name: qce-ng-v1-raw-render
+          path: |
+            qce_ng_v1_raw.wav
+            qce_phonemes.txt
