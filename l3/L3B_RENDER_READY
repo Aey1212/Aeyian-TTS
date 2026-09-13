@@ -1,0 +1,9 @@
+L3b HQ render trigger
+
+Inputs:
+- O15 exact lossless WAV fixture
+- M1 exact lossless qce-ng artifact
+
+Pipeline:
+O/M -> 88.2 kHz float64 F3-HQ -> unchanged OpenVoice V2 TCC
+No post-L3 correction.
