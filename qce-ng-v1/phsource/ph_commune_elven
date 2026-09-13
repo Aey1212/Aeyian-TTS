@@ -1,0 +1,47 @@
+// Commune Elven phoneme overrides for modern eSpeak-NG.
+// qce inherits base1, but Commune [ɹ] must remain an alveolar approximant
+// before consonants instead of changing to base1/r/ (which adds r3/rx noise).
+
+phoneme a
+  CALL base1/a
+endphoneme
+
+phoneme n
+  CALL base1/n
+endphoneme
+
+phoneme t
+  CALL base1/t
+endphoneme
+
+phoneme R
+  CALL base1/R
+endphoneme
+
+phoneme r
+  liquid rhotic
+  ipa ɹ
+  lengthmod 7
+
+  NextVowelStarts
+    VowelStart(r/r@, -15)
+    VowelStart(r/ra, -15)
+    VowelStart(r/re, -15)
+    VowelStart(r/ri, -15)
+    VowelStart(r/ro, -15)
+    VowelStart(r/ru, -15)
+  EndSwitch
+
+  IF prevPh(isVowel) THEN
+    VowelEnding(r/xr, -50)
+  ENDIF
+
+  IF prevPh(isPause) THEN
+    FMT(r/_r)
+  ELIF prevPh(t) OR prevPh(p) OR prevPh(k) THEN
+    FMT(r/tr)
+  ENDIF
+
+  // Deliberately no ChangePhoneme(r/) before consonants.
+  FMT(r/r)
+endphoneme
