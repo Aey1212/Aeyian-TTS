@@ -1,0 +1,1 @@
+O15 WavPack base64 fixture layout: part00 = chunk 00; part01 = chunks 01+02; part03 = chunks 03+04; part05 = chunks 05+06; part07 = chunks 07+08; part09 = chunk 09. The workflow concatenates these lexicographically before base64 decoding.
