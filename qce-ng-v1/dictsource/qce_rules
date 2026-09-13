@@ -1,0 +1,42 @@
+// Commune Elven fallback spelling -> eSpeak phonemes
+.group a
+    aa      a:
+    a       a
+.group b
+    b       b
+.group d
+    d       d
+.group e
+    ee      e:
+    e       e
+.group f
+    f       f
+.group g
+    g       g
+.group i
+    ii      i:
+    i       i
+.group j
+    j       j
+.group l
+    l       l
+.group m
+    m       m
+.group n
+    n       n
+.group o
+    oo      o:
+    o       o
+.group p
+    p       p
+.group r
+    r       R
+.group ɹ
+    ɹ       r
+.group s
+    s       s
+.group t
+    t       t
+.group u
+    uu      u:
+    u       u
