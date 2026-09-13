@@ -37,10 +37,12 @@ jobs:
           cmake --build build --target espeak-ng
           cmake --build build --target data
 
-          # qce is our out-of-tree language, so CMake's stock dictionary list
-          # does not know it exists. Compile it explicitly against the freshly
-          # built qce phoneme table, then install everything normally.
-          build/src/espeak-ng --path=build --compile=qce
+          # The dictionary compiler reads qce_rules/qce_list from cwd.
+          # Run it from dictsource while pointing at the freshly built data.
+          (
+            cd dictsource
+            ../build/src/espeak-ng --path=../build --compile=qce
+          )
           test -s build/espeak-ng-data/qce_dict
 
           cmake --install build
@@ -54,7 +56,6 @@ jobs:
           espeak-ng --voices=qce
           test -s "$ESPEAK_DATA_PATH/qce_dict"
 
-          # -q prevents the debug-only phoneme dump from trying to open ALSA.
           espeak-ng -q -vqce -x 'atla naɹt puld tojamɹan' > qce_phonemes.txt
           espeak-ng -vqce -s 116 -g 0 -p 46 -a 135 -w qce_ng_v1_raw.wav 'atla naɹt puld tojamɹan'
 
