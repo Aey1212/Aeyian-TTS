@@ -58,6 +58,7 @@ jobs:
       - name: Decode frozen F3 fixture
         run: |
           cat l3/fixtures/f3_source_mp3.b64.part* | base64 -d > /tmp/F3.mp3
+          echo 'e34af6f50b5d1eb85d6b54a9f4d5309e4799d638bd8bacac8c5c6095f6fc9f80  /tmp/F3.mp3' | sha256sum -c -
           ffmpeg -v error -y -i /tmp/F3.mp3 -ac 1 /tmp/F3.wav
           ffprobe -v error -show_entries format=duration -of default=nw=1 /tmp/F3.wav
 
