@@ -36,17 +36,30 @@ jobs:
           cmake -B build -G Ninja -DUSE_ASYNC=OFF -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install"
           cmake --build build --target espeak-ng
           cmake --build build --target data
+
+          # qce is our out-of-tree language, so CMake's stock dictionary list
+          # does not know it exists. Compile it explicitly against the freshly
+          # built qce phoneme table, then install everything normally.
+          build/src/espeak-ng --path=build --compile=qce
+          test -s build/espeak-ng-data/qce_dict
+
           cmake --install build
+          cp build/espeak-ng-data/qce_dict "$GITHUB_WORKSPACE/install/share/espeak-ng-data/qce_dict"
 
       - name: Verify qce voice and render raw reference
         run: |
           export PATH="$GITHUB_WORKSPACE/install/bin:$PATH"
           export ESPEAK_DATA_PATH="$GITHUB_WORKSPACE/install/share/espeak-ng-data"
           espeak-ng --version
-          espeak-ng --voices=qce || true
-          espeak-ng -vqce -x 'atla naɹt puld tojamɹan' > qce_phonemes.txt
+          espeak-ng --voices=qce
+          test -s "$ESPEAK_DATA_PATH/qce_dict"
+
+          # -q prevents the debug-only phoneme dump from trying to open ALSA.
+          espeak-ng -q -vqce -x 'atla naɹt puld tojamɹan' > qce_phonemes.txt
           espeak-ng -vqce -s 116 -g 0 -p 46 -a 135 -w qce_ng_v1_raw.wav 'atla naɹt puld tojamɹan'
+
           file qce_ng_v1_raw.wav
+          cat qce_phonemes.txt
           ls -lh qce_ng_v1_raw.wav qce_phonemes.txt
 
       - name: Upload raw render
