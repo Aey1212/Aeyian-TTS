@@ -37,6 +37,7 @@ HOP = 256
 # Low-quefrency envelope: broad enough to keep V3's phonetic/formant skeleton,
 # too coarse to carry individual F0 harmonics.
 KEEP_CEPSTRAL = 42
+PEAK_CEILING = 0.985
 
 
 def load_mono(path: Path) -> tuple[np.ndarray, int]:
@@ -168,10 +169,15 @@ def polish(
         length=len(x),
     )
 
-    # Preserve V3 overall level.
+    # Preserve V3 overall level first, then apply a transparent peak ceiling if
+    # texture reshaping created >0 dBFS peaks. 32-bit float itself can represent
+    # them, but downstream PCM/MP3 exports should never clip.
     rms_x = np.sqrt(np.mean(x * x) + EPS)
     rms_y = np.sqrt(np.mean(y * y) + EPS)
     y *= rms_x / rms_y
+    peak_before_ceiling = float(np.max(np.abs(y)))
+    if peak_before_ceiling > PEAK_CEILING:
+        y *= PEAK_CEILING / peak_before_ceiling
 
     # Verification: this stage should not materially move V3 F0.
     f0_after, _, _ = librosa.pyin(
@@ -197,6 +203,8 @@ def polish(
         "f0_median_shift_cents": median_cents,
         "f0_median_abs_shift_cents": median_abs_cents,
         "voiced_frames": int(np.sum(valid)),
+        "peak_before_ceiling": peak_before_ceiling,
+        "peak_after_ceiling": float(np.max(np.abs(y))),
     }
 
 
