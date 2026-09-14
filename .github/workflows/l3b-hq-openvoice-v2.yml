@@ -61,7 +61,9 @@ jobs:
           cat l3/fixtures/o15_wv_v2/chunk* > /tmp/O15.wv
           echo 'e21b9a9388cff95819a540de22a786dc5b0123a8299f2aef18432e296793ee72  /tmp/O15.wv' | sha256sum -c -
           ffmpeg -v error -y -i /tmp/O15.wv -ac 1 -ar 22050 -c:a pcm_s16le /tmp/O15.wav
-          echo '32aa5bfc3fbee633c6bd1b418363dbd789b5a57610e44aadb590029a7980aacb  /tmp/O15.wav' | sha256sum -c -
+          PCM_SHA=$(ffmpeg -v error -i /tmp/O15.wav -f s16le -acodec pcm_s16le -ac 1 -ar 22050 - | sha256sum | awk '{print $1}')
+          echo "O15 decoded PCM SHA256=${PCM_SHA}"
+          test "${PCM_SHA}" = '0b80cfa95e852bd1e0809653f2f7bc24321e58256ddfcbec0740bd2419c27101'
           ffprobe -v error -show_entries stream=sample_rate,channels,bits_per_sample -show_entries format=duration -of default=nw=1 /tmp/O15.wav
 
       - name: Restore exact lossless M1 from successful qce run
