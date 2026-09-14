@@ -58,7 +58,8 @@ jobs:
 
       - name: Restore exact lossless O15
         run: |
-          cat l3/fixtures/O15_wavpack.b64.part* | base64 -d > /tmp/O15.wv
+          cat l3/fixtures/o15_wv_v2/chunk* > /tmp/O15.wv
+          echo 'e21b9a9388cff95819a540de22a786dc5b0123a8299f2aef18432e296793ee72  /tmp/O15.wv' | sha256sum -c -
           ffmpeg -v error -y -i /tmp/O15.wv -ac 1 -ar 22050 -c:a pcm_s16le /tmp/O15.wav
           echo '32aa5bfc3fbee633c6bd1b418363dbd789b5a57610e44aadb590029a7980aacb  /tmp/O15.wav' | sha256sum -c -
           ffprobe -v error -show_entries stream=sample_rate,channels,bits_per_sample -show_entries format=duration -of default=nw=1 /tmp/O15.wav
@@ -111,7 +112,6 @@ jobs:
             --master output/L3b_openvoice_44k32f.wav \
             --metrics output/L3b_metrics.json \
             --tau 0.3
-          # Preview only. Canonical L3b is the untouched raw converter WAV.
           ffmpeg -v error -y -i output/L3b_openvoice_44k32f.wav \
             -codec:a libmp3lame -b:a 192k output/L3b_openvoice_44k_192k.mp3
 
