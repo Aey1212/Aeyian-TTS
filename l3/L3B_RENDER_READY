@@ -1,11 +1,11 @@
-L3b HQ render trigger — retry 2
+L3b HQ render trigger — retry 3
 
 Inputs:
-- O15 exact lossless WAV fixture
+- O15 exact lossless WAV reconstructed from deterministic binary WavPack fixture v2
 - M1 exact lossless qce-ng artifact
 
 Pipeline:
 O/M -> 88.2 kHz float64 F3-HQ -> unchanged OpenVoice V2 TCC
 No post-L3 correction.
 
-Retry 2 restores missing O15 WavPack base64 chunks 02 and 04 before the checksum gate.
+Retry 3 gates both the WavPack SHA-256 and decoded O15 WAV SHA-256 before fusion.
