@@ -5,6 +5,8 @@ on:
     branches: [current-pipeline-five-sentence-test]
     paths:
       - '.github/workflows/current-pipeline-five-sentence.yml'
+      - 'l3/current_pipeline_five_sentence_benchmark.txt'
+      - 'l3/current_pipeline_benchmark_qce_list'
 
 permissions:
   contents: read
