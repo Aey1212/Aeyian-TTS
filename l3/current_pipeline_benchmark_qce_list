@@ -1,18 +1,20 @@
-// Exact Commune pronunciations for the five-sentence benchmark.
-// Stress and r/ɹ identity come from the Commune dictionary, not another language.
+// Exact Commune pronunciations for the phonetic-contrast benchmark.
+// Stress and r/ɹ identity come from the Commune language data.
 
-atla	at'la
-tu	tu
-ifald	i'fald
-puld	puld
-lemfa	lem'fa
 ta	ta
 piloo	pi'lo:
-sop	sop
-atola	ato'la
-nemiɹd	ne'mird
-buf	buf
 milaa	mi'la:
-atlaj	at'laj
-moɹan	mo'ran
-mef	mef
+atla	at'la
+sitsa	si't|sa
+puld	puld
+lemfa	lem'fa
+joɹu	jo'ru
+duɹd	d'urd
+totto	tott'o
+atjoɹu	atjor'u
+Ragon	R'agon
+tan	tan
+tena	te'na
+ren	ren
+leɹel	ler'el
+ne	ne
