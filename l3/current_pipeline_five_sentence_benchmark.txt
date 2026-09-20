@@ -7,3 +7,5 @@ S2|atla ta sitsa puld lemfa|They (visible) see the fire.
 S3|joɹu duɹd totto atjoɹu|Someone came from the stone.
 S4|joɹu Ragon puld tan|Someone crosses Ragon.
 S5|tena ren puld leɹel ne|Do you (elevated) know me?
+
+# render: phonetic-contrast-v1
