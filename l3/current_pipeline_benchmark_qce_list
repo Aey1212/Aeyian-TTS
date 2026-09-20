@@ -1,10 +1,10 @@
 // Exact benchmark lexicon for the current-pipeline five-sentence test.
 // These entries bypass generic spelling fallback so Commune stress/allophony
 // are explicit in qce phoneme syntax.
+// "puld" is already present in the canonical qce_list and is not duplicated here.
 
 ren	R'en
 omɹa	omr'a
-puld	p'uld
 lemfamre	lemfamR'e
 tena	ten'a
 leɹel	ler'el
