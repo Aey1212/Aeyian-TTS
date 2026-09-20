@@ -1,0 +1,9 @@
+name CommuneElven
+language qce
+phonemes base2
+dictionary qce
+gender male
+
+stressLength 150 155 175 175 0 0 190 200
+stressAmp 16 16 20 20 20 22 24 22
+intonation 1
