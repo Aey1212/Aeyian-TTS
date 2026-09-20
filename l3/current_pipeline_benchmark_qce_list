@@ -1,19 +1,18 @@
-// Exact benchmark lexicon for the current-pipeline five-sentence test.
-// These entries bypass generic spelling fallback so Commune stress/allophony
-// are explicit in qce phoneme syntax.
-// "puld" is already present in the canonical qce_list and is not duplicated here.
+// Exact Commune pronunciations for the five-sentence benchmark.
+// Stress and r/ɹ identity come from the Commune dictionary, not another language.
 
-ren	R'en
-omɹa	omr'a
-lemfamre	lemfamR'e
-tena	ten'a
-leɹel	ler'el
-teɹaj	ter'aj
-lemfalje	lemfalj'e
-joɹu	jor'u
-duɹd	d'urd
-totto	tott'o
-atjoɹu	atjor'u
-jiɹdij	jird'ij
-omɹaj	omr'aj
-niɹd	n'ird
+atla	at'la
+tu	tu
+ifald	i'fald
+puld	puld
+lemfa	lem'fa
+ta	ta
+piloo	pi'lo:
+sop	sop
+atola	ato'la
+nemiɹd	ne'mird
+buf	buf
+milaa	mi'la:
+atlaj	at'laj
+moɹan	mo'ran
+mef	mef
