@@ -1,9 +1,9 @@
-# Current-pipeline five-sentence benchmark
+# Current-pipeline five-sentence phonetic-contrast benchmark
 # O and M both synthesize the exact same whole sentence continuously.
-# Each token below has an exact Commune qce pronunciation entry.
+# The set deliberately stresses different parts of Commune phonology.
 
-S1|atla tu ifald puld lemfa|They (visible) see the house.
-S2|atla ta piloo puld sop|They (visible) follow the bird.
-S3|atola ta nemiɹd puld buf|They (not visible) cook the bread.
-S4|atola milaa|They (not visible) fly.
-S5|atlaj ta moɹan puld mef|They take the fruit.
+S1|ta piloo milaa|The bird flies.
+S2|atla ta sitsa puld lemfa|They (visible) see the fire.
+S3|joɹu duɹd totto atjoɹu|Someone came from the stone.
+S4|joɹu Ragon puld tan|Someone crosses Ragon.
+S5|tena ren puld leɹel ne|Do you (elevated) know me?
