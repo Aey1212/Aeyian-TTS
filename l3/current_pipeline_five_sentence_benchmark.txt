@@ -1,12 +1,9 @@
 # Current-pipeline five-sentence benchmark
-# Exact chain per sentence:
-#   O15 frozen carrier + M1 exact Commune phonetic print -> F3 -> unchanged L3a
-#
-# Surface forms are written without morphological hyphens for synthesis.
-# Post-consonantal /r/ is represented as trill in the exact qce mapping.
+# O and M both synthesize the exact same whole sentence continuously.
+# Each token below has an exact Commune qce pronunciation entry.
 
-S1|ren omɹa puld lemfamre|I saw the tree.
-S2|tena ren puld leɹel|You (elevated) know me.
-S3|teɹaj omɹa puld lemfalje|You all will see the tree.
-S4|joɹu duɹd totto atjoɹu|Someone came from the stone.
-S5|ren jiɹdij omɹaj puld niɹd|I want dozens of trees.
+S1|atla tu ifald puld lemfa|They (visible) see the house.
+S2|atla ta piloo puld sop|They (visible) follow the bird.
+S3|atola ta nemiɹd puld buf|They (not visible) cook the bread.
+S4|atola milaa|They (not visible) fly.
+S5|atlaj ta moɹan puld mef|They take the fruit.
