@@ -1,0 +1,12 @@
+# Current-pipeline five-sentence benchmark
+# Exact chain per sentence:
+#   O15 frozen carrier + M1 exact Commune phonetic print -> F3 -> unchanged L3a
+#
+# Surface forms are written without morphological hyphens for synthesis.
+# Post-consonantal /r/ is represented as trill in the exact qce mapping.
+
+S1|ren omɹa puld lemfamre|I saw the tree.
+S2|tena ren puld leɹel|You (elevated) know me.
+S3|teɹaj omɹa puld lemfalje|You all will see the tree.
+S4|joɹu duɹd totto atjoɹu|Someone came from the stone.
+S5|ren jiɹdij omɹaj puld niɹd|I want dozens of trees.
