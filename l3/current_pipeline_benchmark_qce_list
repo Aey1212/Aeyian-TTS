@@ -1,0 +1,19 @@
+// Exact benchmark lexicon for the current-pipeline five-sentence test.
+// These entries bypass generic spelling fallback so Commune stress/allophony
+// are explicit in qce phoneme syntax.
+
+ren	R'en
+omɹa	omr'a
+puld	p'uld
+lemfamre	lemfamR'e
+tena	ten'a
+leɹel	ler'el
+teɹaj	ter'aj
+lemfalje	lemfalj'e
+joɹu	jor'u
+duɹd	d'urd
+totto	tott'o
+atjoɹu	atjor'u
+jiɹdij	jird'ij
+omɹaj	omr'aj
+niɹd	n'ird
