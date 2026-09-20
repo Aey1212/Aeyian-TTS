@@ -1,0 +1,15 @@
+# Route B five-sentence listening benchmark
+# M1/qce-ng -> unchanged L3a OpenVoice V2
+#
+# These are surface-pronunciation test strings, not a new orthography.
+# Post-consonantal /r/ is written as r in lemfamre/mefamre so the benchmark
+# follows Commune Elven allophony ([r] after a consonant) without changing
+# the qce frontend implementation during this test.
+
+S1|ren tu ifald puld lemfamre.|I saw the house.
+S2|atla ta piloo puld sopuɹu.|They (visible) followed the bird.
+S3|teɹa ta nemiɹd puld bufilje ne?|Will you (equal) cook the bread?
+S4|atola milaa.|They (not visible) are flying.
+S5|ren ta moɹan puld mefamre uɹd.|I did not take the fruit.
+
+COMBINED|ren tu ifald puld lemfamre. atla ta piloo puld sopuɹu. teɹa ta nemiɹd puld bufilje ne? atola milaa. ren ta moɹan puld mefamre uɹd.
