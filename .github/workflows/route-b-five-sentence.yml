@@ -1,0 +1,170 @@
+name: Route B five-sentence L3a benchmark
+
+on:
+  push:
+    branches: [route-b-five-sentence-test]
+    paths:
+      - '.github/workflows/route-b-five-sentence.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  render:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout Aeyian TTS
+        uses: actions/checkout@v4
+
+      - name: Install system and eSpeak build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build build-essential libpcaudio-dev libsonic-dev ffmpeg libsndfile1
+
+      - name: Build exact qce eSpeak-NG 1.52.0 frontend
+        run: |
+          git clone --depth 1 --branch 1.52.0 https://github.com/espeak-ng/espeak-ng.git espeak-ng
+          cp qce-ng-v1/phsource/ph_commune_elven espeak-ng/phsource/ph_commune_elven
+          cat qce-ng-v1/phsource/phonemes.qce.block >> espeak-ng/phsource/phonemes
+          cp qce-ng-v1/dictsource/qce_list espeak-ng/dictsource/qce_list
+          cp qce-ng-v1/dictsource/qce_rules espeak-ng/dictsource/qce_rules
+          mkdir -p espeak-ng/espeak-ng-data/lang/art
+          cp qce-ng-v1/espeak-ng-data/lang/art/qce espeak-ng/espeak-ng-data/lang/art/qce
+
+          cmake -S espeak-ng -B espeak-ng/build -G Ninja \
+            -DUSE_ASYNC=OFF -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX="$GITHUB_WORKSPACE/install"
+          cmake --build espeak-ng/build --target espeak-ng
+          cmake --build espeak-ng/build --target data
+          (
+            cd espeak-ng/dictsource
+            ../build/src/espeak-ng --path=../build --compile=qce
+          )
+          test -s espeak-ng/build/espeak-ng-data/qce_dict
+          cmake --install espeak-ng/build
+          cp espeak-ng/build/espeak-ng-data/qce_dict "$GITHUB_WORKSPACE/install/share/espeak-ng-data/qce_dict"
+
+      - name: Render five M1 sentences plus combined paragraph
+        run: |
+          export PATH="$GITHUB_WORKSPACE/install/bin:$PATH"
+          export ESPEAK_DATA_PATH="$GITHUB_WORKSPACE/install/share/espeak-ng-data"
+          mkdir -p output
+
+          espeak-ng --version
+          espeak-ng --voices=qce
+
+          while IFS='|' read -r label text gloss; do
+            case "$label" in
+              S1|S2|S3|S4|S5)
+                echo "$label | $text | $gloss"
+                espeak-ng -q -vqce -x "$text" > "output/M1_${label}_phonemes.txt"
+                espeak-ng -vqce -s 116 -g 0 -p 46 -a 135 \
+                  -w "output/M1_${label}.wav" "$text"
+                ;;
+              COMBINED)
+                echo "$text" > output/benchmark_combined.txt
+                espeak-ng -q -vqce -x "$text" > output/M1_COMBINED_phonemes.txt
+                espeak-ng -vqce -s 116 -g 0 -p 46 -a 135 \
+                  -w output/M1_COMBINED.wav "$text"
+                ;;
+            esac
+          done < l3/route_b_five_sentence_benchmark.txt
+
+          for f in output/M1_*_phonemes.txt; do
+            echo "===== $f ====="
+            cat "$f"
+          done
+          ffprobe -v error -show_entries format=duration -of default=nw=1 output/M1_COMBINED.wav
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install OpenVoice inference dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install --index-url https://download.pytorch.org/whl/cpu torch==2.2.2
+          pip install 'numpy<2' scipy soundfile librosa==0.10.2.post1 huggingface_hub \
+            eng_to_ipa==0.0.2 inflect==7.0.0 unidecode==1.3.7 \
+            pypinyin==0.50.0 cn2an==0.5.22 jieba==0.42.1
+
+      - name: Checkout and patch official OpenVoice
+        run: |
+          git clone --depth 1 https://github.com/myshell-ai/OpenVoice.git /tmp/OpenVoice
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('/tmp/OpenVoice/openvoice/api.py')
+          s = p.read_text()
+          s = s.replace("if kwargs.get('enable_watermark', True):", "if False:")
+          p.write_text(s)
+          PY
+
+      - name: Download same OpenVoice V2 converter and reference as L3a
+        run: |
+          mkdir -p /tmp/checkpoints_v2/converter
+          python - <<'PY'
+          from huggingface_hub import hf_hub_download
+          for name in ('config.json', 'checkpoint.pth'):
+              print(hf_hub_download(
+                  'myshell-ai/OpenVoiceV2',
+                  f'converter/{name}',
+                  local_dir='/tmp/checkpoints_v2'
+              ))
+          PY
+          curl -L --fail --retry 3 \
+            https://raw.githubusercontent.com/myshell-ai/OpenVoice/main/resources/example_reference.mp3 \
+            -o /tmp/openvoice_reference.mp3
+
+      - name: Convert every M1 render through unchanged L3a
+        env:
+          PYTHONPATH: /tmp/OpenVoice
+        run: |
+          for label in S1 S2 S3 S4 S5 COMBINED; do
+            python l3/run_openvoice_tcc.py \
+              --openvoice-root /tmp/OpenVoice \
+              --checkpoint-dir /tmp/checkpoints_v2/converter \
+              --source "output/M1_${label}.wav" \
+              --target /tmp/openvoice_reference.mp3 \
+              --output "output/RouteB_${label}_L3a_raw.wav" \
+              --master "output/RouteB_${label}_L3a_44k32f.wav" \
+              --metrics "output/RouteB_${label}_metrics.json" \
+              --tau 0.3
+
+            ffmpeg -v error -y \
+              -i "output/RouteB_${label}_L3a_raw.wav" \
+              -codec:a libmp3lame -b:a 192k \
+              "output/RouteB_${label}_L3a_192k.mp3"
+          done
+
+      - name: Summarize outputs
+        run: |
+          echo "=== Combined source ==="
+          cat output/benchmark_combined.txt
+          echo "=== Combined qce phonemes ==="
+          cat output/M1_COMBINED_phonemes.txt
+          echo "=== L3a metrics ==="
+          for f in output/RouteB_*_metrics.json; do
+            echo "---- $f"
+            cat "$f"
+          done
+          sha256sum output/M1_*.wav output/RouteB_*_L3a_raw.wav > output/SHA256SUMS.txt
+          cat output/SHA256SUMS.txt
+
+      - name: Upload benchmark artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: route-b-five-sentence-l3a
+          path: |
+            l3/route_b_five_sentence_benchmark.txt
+            output/M1_*.wav
+            output/M1_*_phonemes.txt
+            output/RouteB_*_L3a_raw.wav
+            output/RouteB_*_L3a_44k32f.wav
+            output/RouteB_*_L3a_192k.mp3
+            output/RouteB_*_metrics.json
+            output/benchmark_combined.txt
+            output/SHA256SUMS.txt
+          if-no-files-found: error
