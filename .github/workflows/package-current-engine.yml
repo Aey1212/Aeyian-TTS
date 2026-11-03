@@ -1,0 +1,60 @@
+name: Package current Aeyian TTS engine
+
+on:
+  push:
+    branches: [current-pipeline-five-sentence-test]
+    paths:
+      - '.github/workflows/package-current-engine.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Assemble engine source package
+        run: |
+          set -euo pipefail
+          OUT=Aeyian-TTS-current-engine
+          mkdir -p "$OUT/fusion" "$OUT/l3" "$OUT/.github/workflows"
+
+          cp -a legacy-o "$OUT/"
+          cp -a qce-ng-v1 "$OUT/"
+          cp fusion/fuse_v3_phonetic_print.py "$OUT/fusion/"
+          cp l3/run_openvoice_tcc.py "$OUT/l3/"
+          cp l3/L3_STATUS.md "$OUT/l3/"
+          cp l3/current_pipeline_benchmark_qce_list "$OUT/l3/"
+          cp l3/current_pipeline_five_sentence_benchmark.txt "$OUT/l3/"
+          cp .github/workflows/current-pipeline-five-sentence.yml "$OUT/.github/workflows/"
+          cp README.md "$OUT/"
+
+          {
+            echo "Aeyian TTS - current working engine source"
+            echo "Pipeline: fresh legacy O -> fresh modern M -> F3 phonetic-print fusion -> L3a OpenVoice V2"
+            echo "Repository commit: $GITHUB_SHA"
+            echo
+            echo "Core files:"
+            echo "  legacy-o/                         legacy Commune qce+f2 frontend/runtime data"
+            echo "  qce-ng-v1/                        modern Commune qce-ng frontend"
+            echo "  fusion/fuse_v3_phonetic_print.py canonical F3 fusion"
+            echo "  l3/run_openvoice_tcc.py           canonical L3a voice conversion"
+            echo "  .github/workflows/current-pipeline-five-sentence.yml"
+            echo
+            echo "External/runtime dependencies are not vendored:"
+            echo "  eSpeak 1.48.x / system espeak"
+            echo "  eSpeak-NG 1.52.0"
+            echo "  OpenVoice V2 + converter checkpoint"
+            echo "  Python inference dependencies"
+          } > "$OUT/ENGINE_MANIFEST.txt"
+
+      - name: Upload engine package
+        uses: actions/upload-artifact@v4
+        with:
+          name: Aeyian-TTS-current-engine
+          path: Aeyian-TTS-current-engine/
+          if-no-files-found: error
+          retention-days: 90
